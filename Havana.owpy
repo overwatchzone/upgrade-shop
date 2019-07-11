@@ -71,6 +71,7 @@ Rule "Setup Global"
     Actions
         gvar shopTeleportLocation = <-15, 6, -80>
         gvar exitPortalLocation = <-4.5, 6, -79.25>
+        gvar buyMultiplierLocation = <-2, 6, -92>
 
         gvar gmoneyTime = [<-18, 5.85, -77.25>, White, 100, `{}: {}`(`{} {}`("Upgrade", `{} {}`("Money", "Time")), 100)]
         gvar gmoneyElim = [<-22, 5.85, -77.25>, White, 100,  `{}: {}`(`{} {}`("Upgrade", `{} {} {}`("Money", "On", "Kill")), 100)]
@@ -103,7 +104,10 @@ Rule "Setup Store Locations"
         CreateBuyCircle(gunlockAbilityTwo[0], gunlockAbilityTwo[1], gunlockAbilityTwo[3])
 
         CreateEffect(exitPortalLocation, light shaft, Red)
-        GameText(Everyone, `Exit`,(exitPortalLocation + Up), 1.5)
+        GameText(Everyone, `Exit`, (exitPortalLocation + Up), 1.5)
+
+        CreateEffect(buyMultiplierLocation, ring, Blue)
+        GameText(Everyone, `Buy Faster`, (buyMultiplierLocation + Up), 1.5)
 
 Rule "Setup Player"
     Event
@@ -142,6 +146,7 @@ Rule "Setup Player"
         pvar holdingTeleportKey = false
         pvar takenDamage = false
         pvar isMoving = false
+        pvar buyMultiplier = 1
 
         ResetPlayerUI(Event Player)
 
@@ -442,29 +447,29 @@ Rule "Loop - Check Player Is Not Moving"
 Rule "Buy Money / Time"
     GenBuyEvent()
     Conditions
-        GenBuyConditions(gmoneyTime[2], gmoneyTime[0])
+        GenBuyConditions((gmoneyTime[2] * pvar buyMultiplier), gmoneyTime[0])
         pvar moneyTime < 2499
     Actions
-        GenBuyBaseActionsPre(gmoneyTime[2], gmoneyTime[0], gmoneyTime[1])
-        pvar moneyTime += 2
+        GenBuyBaseActionsPre((gmoneyTime[2] * pvar buyMultiplier), gmoneyTime[0], gmoneyTime[1])
+        pvar moneyTime += (2 * pvar buyMultiplier)
         GenBuyBaseActionsPost()
 
 Rule "Buy Money On Kill"
     GenBuyEvent()
     Conditions
-        GenBuyConditions(gmoneyElim[2], gmoneyElim[0])
+        GenBuyConditions((gmoneyElim[2] * pvar buyMultiplier), gmoneyElim[0])
     Actions
-        GenBuyBaseActionsPre(gmoneyElim[2], gmoneyElim[0], gmoneyElim[1])
-        pvar moneyElim += 15
+        GenBuyBaseActionsPre((gmoneyElim[2] * pvar buyMultiplier), gmoneyElim[0], gmoneyElim[1])
+        pvar moneyElim += (15 * pvar buyMultiplier)
         GenBuyBaseActionsPost()
 
 Rule "Buy Health Boost"
     GenBuyEvent()
     Conditions
-        GenBuyConditions(ghealthBoost[2], ghealthBoost[0])
+        GenBuyConditions((ghealthBoost[2] * pvar buyMultiplier), ghealthBoost[0])
     Actions
-        GenBuyBaseActionsPre(ghealthBoost[2], ghealthBoost[0], ghealthBoost[1])
-        pvar healthBoost += 2
+        GenBuyBaseActionsPre((ghealthBoost[2] * pvar buyMultiplier), ghealthBoost[0], ghealthBoost[1])
+        pvar healthBoost += (2 * pvar buyMultiplier)
         Set Max Health
             Event Player
             100 + pvar healthBoost
@@ -477,11 +482,11 @@ Rule "Buy Health Boost"
 Rule "Buy Health Regen"
     GenBuyEvent()
     Conditions
-        GenBuyConditions(ghealthTime[2], ghealthTime[0])
+        GenBuyConditions((ghealthTime[2] * pvar buyMultiplier), ghealthTime[0])
     Actions
-        GenBuyBaseActionsPre(ghealthTime[2], ghealthTime[0], ghealthTime[1])
+        GenBuyBaseActionsPre((ghealthTime[2] * pvar buyMultiplier), ghealthTime[0], ghealthTime[1])
 
-        pvar healthTime += 2
+        pvar healthTime += (2 * pvar buyMultiplier)
 
         Stop Heal Over Time
             Last Heal Over Time ID
@@ -497,19 +502,19 @@ Rule "Buy Health Regen"
 Rule "Buy Damage Boost"
     GenBuyEvent()
     Conditions
-        GenBuyConditions(gdamageBoost[2], gdamageBoost[0])
+        GenBuyConditions((gdamageBoost[2] * pvar buyMultiplier), gdamageBoost[0])
     Actions
-        GenBuyBaseActionsPre(gdamageBoost[2], gdamageBoost[0], gdamageBoost[1])
-        pvar damageBoost += 2
+        GenBuyBaseActionsPre((gdamageBoost[2] * pvar buyMultiplier), gdamageBoost[0], gdamageBoost[1])
+        pvar damageBoost += (2 * pvar buyMultiplier)
         GenBuyBaseActionsPost()
 
 Rule "Buy Speed Boost"
     GenBuyEvent()
     Conditions
-        GenBuyConditions(gspeedBoost[2], gspeedBoost[0])
+        GenBuyConditions((gspeedBoost[2] * pvar buyMultiplier), gspeedBoost[0])
         pvar speedBoost < 100
     Actions
-        GenBuyBaseActionsPre(gspeedBoost[2], gspeedBoost[0], gspeedBoost[1])
+        GenBuyBaseActionsPre((gspeedBoost[2] * pvar buyMultiplier), gspeedBoost[0], gspeedBoost[1])
         pvar speedBoost += 1
         Set Move Speed
             Event Player
@@ -519,10 +524,10 @@ Rule "Buy Speed Boost"
 Rule "Buy Projectile Speed"
     GenBuyEvent()
     Conditions
-        GenBuyConditions(gprojectileBoost[2], gprojectileBoost[0])
+        GenBuyConditions((gprojectileBoost[2] * pvar buyMultiplier), gprojectileBoost[0])
     Actions
-        GenBuyBaseActionsPre(gprojectileBoost[2], gprojectileBoost[0], gprojectileBoost[1])
-        pvar projectileBoost += 2
+        GenBuyBaseActionsPre((gprojectileBoost[2] * pvar buyMultiplier), gprojectileBoost[0], gprojectileBoost[1])
+        pvar projectileBoost += (2 * pvar buyMultiplier)
         Set Projectile Speed
             Event Player
             100 + pvar projectileBoost
@@ -567,6 +572,23 @@ Rule "Buy Ultimate Ability"
             True
         GenBuyBaseActionsPost()
 
+Rule "Buy Multiplier"
+    GenBuyEvent()
+    Conditions
+        Event Player.interacting == true
+        Distance Between
+            Event Player
+            gvar buyMultiplierLocation
+        <= 1.25
+    Actions
+        if pvar buyMultiplier == 1:
+            pvar buyMultiplier = 10
+        elif pvar buyMultiplier == 10:
+            pvar buyMultiplier = 100
+        elif pvar buyMultiplier == 100:
+            pvar buyMultiplier = 1
+
+        Msg(Event Player, `Buy Fast: {}`(pvar buyMultiplier))
 /*
 Rule "Buy Base"
     GenBuyEvent()
@@ -608,6 +630,18 @@ Rule "Shop Cooldown Reset Watcher"
 
 //for loc in storeLocations:
 //    GenerateBuyRule(loc[0], loc[1], loc[2])
+
+Rule "Debug Coordinates"
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        Event Player.crouching
+        Event Player.interacting
+        Is Firing Primary(Event Player)
+    Actions
+        Msg(Event Player, `You: {}`(Position Of(Event Player)))
 
 Disabled Rule "Coordinate Viewer"
     Event
