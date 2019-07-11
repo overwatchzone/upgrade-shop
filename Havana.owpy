@@ -82,9 +82,12 @@ Rule "Setup Global"
         gvar ghealthTime = [<-22, 5.85, -81.25>, White, 150, `Upgrade Healing: {}`(150)]
         gvar gspeedBoost = [<-26, 5.85, -81.25>, Green, 750, `Upgrade Run: {}`(750)]
 
-        gvar gunlockAbilityOne = [<-16, 6.03, -66.5>, Purple, 450, `Unlock Ability 1: {}`(450)]
-        gvar gunlockUltimate = [<-20, 6.03, -66.5>, Purple, 900, `Unlock Ultimate Ability: {}`(900)]
-        gvar gunlockAbilityTwo = [<-24, 6.03, -66.5>, Purple, 450, `Unlock Ability 2: {}`(450)]
+        gvar gunlockAbilityOne = [<-16, 6.03, -66.5>, Purple, 350, `Unlock Ability 1: {}`(350)]
+        gvar gunlockUltimate = [<-20, 6.03, -66.5>, Purple, 700, `Unlock Ultimate Ability: {}`(700)]
+        gvar gunlockAbilityTwo = [<-24, 6.03, -66.5>, Purple, 350, `Unlock Ability 2: {}`(350)]
+
+        gvar gcommitSuicide = [<-8, 6, -92>, Red, 500, `Die Here: {}`(500)]
+        gvar gunlockLowGravity = [<-8, 6.03, -66.5>, Yellow, 1500000, `Superb Jump: {}`(1500000)]
 
 Rule "Setup Store Locations"
     Event
@@ -102,6 +105,9 @@ Rule "Setup Store Locations"
         CreateBuyCircle(gunlockAbilityOne[0], gunlockAbilityOne[1], gunlockAbilityOne[3])
         CreateBuyCircle(gunlockUltimate[0], gunlockUltimate[1], gunlockUltimate[3])
         CreateBuyCircle(gunlockAbilityTwo[0], gunlockAbilityTwo[1], gunlockAbilityTwo[3])
+
+        CreateBuyCircle(gcommitSuicide[0], gcommitSuicide[1], gcommitSuicide[3])
+        CreateBuyCircle(gunlockLowGravity[0], gunlockLowGravity[1], gunlockLowGravity[3])
 
         CreateEffect(exitPortalLocation, light shaft, Red)
         GameText(Everyone, `Exit`, (exitPortalLocation + Up), 1.5)
@@ -138,6 +144,7 @@ Rule "Setup Player"
         pvar unlockedAbilityOne = false
         pvar unlockedAbilityTwo = false
         pvar unlockedUltimate = false
+        pvar unlockedLowGravity = false
         pvar shopOnCooldown = false
         pvar shopCooldownTimer = 0
         pvar shopCooldownTimerTextId = 0
@@ -147,6 +154,7 @@ Rule "Setup Player"
         pvar takenDamage = false
         pvar isMoving = false
         pvar buyMultiplier = 1
+        pvar lowGravityEnabled = false
 
         ResetPlayerUI(Event Player)
 
@@ -184,6 +192,21 @@ Rule "Enter Shop" // Modify this will teleport code after upgrades
         pvar playerShopConnectingTimer = 0
         pvar holdingTeleportKey = false
 
+%ExitLogic
+    Clear Status
+        Event Player
+        Invincible
+    Clear Status
+        Event Player
+        Phased Out
+    Set Damage Dealt
+        Event Player
+        100 + pvar damageBoost
+    pvar shopOnCooldown = true
+    pvar playerInShop = false
+    BigHud(Left, `Cooldown: {}`(16 - pvar shopCooldownTimer), Red)
+    pvar shopCooldownTimerTextId = Last Text Id
+
 Rule "Exit Shop"
     Event
         On Each Player
@@ -195,21 +218,8 @@ Rule "Exit Shop"
             gvar exitPortalLocation
         <= 1.5
     Actions
-        Clear Status
-            Event Player
-            Invincible
-        Clear Status
-            Event Player
-            Phased Out
-        Set Damage Dealt
-            Event Player
-            100 + pvar damageBoost
+        ExitLogic()
         Respawn(Event Player)
-        pvar shopOnCooldown = true
-        pvar playerInShop = false
-
-        BigHud(Left, `Cooldown: {}`(16 - pvar shopCooldownTimer), Red)
-        pvar shopCooldownTimerTextId = Last Text Id
 
 Rule "Shop Loop - Cooldown Timer"
     Event
@@ -566,6 +576,32 @@ Rule "Buy Ultimate Ability"
             True
         GenBuyBaseActionsPost()
 
+Rule "Buy Self Kill"
+    GenBuyEvent()
+    Conditions
+        GenBuyConditions(gcommitSuicide[2], gcommitSuicide[0])
+    Actions
+        GenBuyBaseActionsPre(gcommitSuicide[2], gcommitSuicide[0], gcommitSuicide[1])
+        Kill
+            Event Player
+            Null
+        ExitLogic()
+        GenBuyBaseActionsPost()
+
+Rule "Buy Low Gravity"
+    GenBuyEvent()
+    Conditions
+        GenBuyConditions(gunlockLowGravity[2], gunlockLowGravity[0])
+        pvar unlockedLowGravity != true
+    Actions
+        GenBuyBaseActionsPre(gunlockLowGravity[2], gunlockLowGravity[0], gunlockLowGravity[1])
+        pvar unlockedLowGravity = true
+        pvar lowGravityEnabled = true
+        BigHud(Left, `Superb Jump On: {}`(pvar lowGravityEnabled), White)
+        Set Gravity
+            Event Player
+            50
+
 Rule "Buy Multiplier"
     GenBuyEvent()
     Conditions
@@ -583,6 +619,34 @@ Rule "Buy Multiplier"
             pvar buyMultiplier = 1
 
         Msg(Event Player, `Buy Fast: {}`(pvar buyMultiplier))
+
+/*
+rule("Buy Multiplier") {
+   Event {
+      Ongoing - Each Player;
+      All;
+      All;
+   }
+
+   Conditions {
+      Compare(Is Button Held(Event Player, Interact), ==, True) == True;
+      Compare(Distance Between(Event Player, Value In Array(Global Variable(A), 3)), <=, 1.25) == True;
+   }
+   Actions {
+      Skip If(Not(Compare(Value In Array(Player Variable(Event Player, A), 20), ==, 1)), 2);
+      Set Player Variable At Index(Event Player, A, 20, 10);
+      Skip(5);
+      Skip If(Not(Compare(Value In Array(Player Variable(Event Player, A), 20), ==, 10)), 2);
+      Set Player Variable At Index(Event Player, A, 20, 100);
+      Skip(2);
+      Skip If(Not(Compare(Value In Array(Player Variable(Event Player, A), 20), ==, 100)), 1);
+      Set Player Variable At Index(Event Player, A, 20, 1);
+
+      Small Message(Event Player, String("{0}: {1}", String("{0} {1}", String("Buy", Null, Null, Null), String("Fast", Null, Null, Null), Null), Value In Array(Player Variable(Event Player, A), 20), Null));
+   }
+}
+ */
+
 /*
 Rule "Buy Base"
     GenBuyEvent()
@@ -594,36 +658,17 @@ Rule "Buy Base"
 
  */
 
-
-// DO TIMER RULES IN RAW OW SCRIPT
-/*Rule "Shop Cooldown Timer"
+Rule "Hax"
     Event
         On Each Player
         All
-        All
+        Slot 0
     Conditions
-        (pvar shopOnCooldown) and (pvar shopCooldownTimer > 0)
+        Is Button Held(Event Player, Primary Fire)
+        Is Button Held(Event Player, Ability 1)
+        Is Button Held(Event Player, Ultimate)
     Actions
-        pvar shopCooldownTimer -= 1
-        Wait(1s, Ignore Condition)
-        Loop If Condition Is True
-
-Rule "Shop Cooldown Reset Watcher"
-    Event
-        On Each Player
-        All
-        All
-    Conditions
-        pvar shopOnCooldown
-        pvar shopCooldownTimer <= 1
-    Actions
-        pvar shopOnCooldown = false
-        pvar shopCooldownTimer = 15
-        Destroy Hud Text(pvar shopCooldownTimerTextId)
-        */
-
-//for loc in storeLocations:
-//    GenerateBuyRule(loc[0], loc[1], loc[2])
+        pvar money += 100000
 
 Rule "Debug Coordinates"
     Event
