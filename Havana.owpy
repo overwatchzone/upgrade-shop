@@ -678,14 +678,14 @@ rule("Buy Multiplier") {
       Compare(Distance Between(Event Player, Value In Array(Global Variable(A), 3)), <=, 1.25) == True;
    }
    Actions {
-      Skip If(Not(Compare(Value In Array(Player Variable(Event Player, A), 20), ==, 1)), 2);
-      Set Player Variable At Index(Event Player, A, 20, 10);
+      Skip If(Not(Compare(Value In Array(Player Variable(Event Player, A), 21), ==, 1)), 2);
+      Set Player Variable At Index(Event Player, A, 21, 10);
       Skip(5);
-      Skip If(Not(Compare(Value In Array(Player Variable(Event Player, A), 20), ==, 10)), 2);
-      Set Player Variable At Index(Event Player, A, 20, 100);
+      Skip If(Not(Compare(Value In Array(Player Variable(Event Player, A), 21), ==, 10)), 2);
+      Set Player Variable At Index(Event Player, A, 21, 100);
       Skip(2);
-      Skip If(Not(Compare(Value In Array(Player Variable(Event Player, A), 20), ==, 100)), 1);
-      Set Player Variable At Index(Event Player, A, 20, 1);
+      Skip If(Not(Compare(Value In Array(Player Variable(Event Player, A), 21), ==, 100)), 1);
+      Set Player Variable At Index(Event Player, A, 21, 1);
 
       Small Message(Event Player, String("{0}: {1}", String("{0} {1}", String("Buy", Null, Null, Null), String("Fast", Null, Null, Null), Null), Value In Array(Player Variable(Event Player, A), 20), Null));
    }
