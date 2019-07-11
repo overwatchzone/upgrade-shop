@@ -413,12 +413,6 @@ Rule "Loop - Check Player Is Not Moving"
         All
         All
 
-%GenBuyEvent
-    Event
-        On Each Player
-        All
-        All
-
 %GenBuyConditions(price, pos)
     Event Player.interacting == true
     Distance Between
