@@ -1,0 +1,660 @@
+
+%BigHud(loc, text, color)
+    Hud
+        Visible_To: Event Player
+        Header: text
+        Subheader: Null
+        Text: Null
+        Location: loc
+        Sort_Order: 0
+        Header_Color: color
+        Subheader_Color: White
+        Text_Color: White
+        Reevaluation: Visible To And String
+
+%SmallHud(loc, text, color)
+    Hud
+        Visible_To: Event Player
+        Header: Null
+        Subheader: Null
+        Text: text
+        Location: loc
+        Sort_Order: 999
+        Header_Color: White
+        Subheader_Color: White
+        Text_Color: color
+        Reevaluation: Visible To And String
+
+%PlayEffect(positionv, type, effectcolor)
+    Play Effect
+        Visible_To: Event Player
+        Type: type
+        Color: effectcolor
+        Position: positionv
+        Radius: 1.5
+
+%CreateEffect(pos, type, color)
+    Create Effect
+        Visible_To: Everyone
+        Type: type
+        Color: color
+        Position: pos
+        Radius: 1.5
+        Reevaluation: Visible To
+
+%GameText(who, text, pos, scale)
+    World Text
+        Visible_To: who
+        Header: text
+        Position: pos
+        Scale: scale
+        Clipping: Clip Against Surfaces
+        Reevaluation: Visible To And String
+
+%ResetPlayerUI(player_)
+    BigHud(Top, `Money: {}`(pvar money), White)
+    BigHud(Left, `Attack Fast: {}%`(pvar projectileBoost), White)
+    BigHud(Left, `Run: {}%`(pvar speedBoost), White)
+    BigHud(Left, `Damage: {}%`(pvar damageBoost), White)
+    BigHud(Left, `Max Life: {}%`(pvar healthBoost), White)
+    BigHud(Left, `Healing Over Time: {}`(pvar healthTime), White)
+    BigHud(Left, `Money On Kill: {}`(pvar moneyElim), White)
+    BigHud(Left, `Money Over Time: {}`(pvar moneyTime), White)
+
+%CreateBuyCircle(location, color, text)
+    CreateEffect(location, ring, color)
+    GameText(Everyone, text, (location + Up), 1.5)
+
+Rule "Setup Global"
+    Event
+        On Global
+    Actions
+        gvar shopTeleportLocation = <-15, 6, -80>
+        gvar exitPortalLocation = <-4.5, 6, -79.25>
+
+        gvar gmoneyTime = [<-18, 5.85, -77.25>, White, 100, `{}: {}`(`{} {}`("Upgrade", `{} {}`("Money", "Time")), 100)]
+        gvar gmoneyElim = [<-22, 5.85, -77.25>, White, 100,  `{}: {}`(`{} {}`("Upgrade", `{} {} {}`("Money", "On", "Kill")), 100)]
+        gvar gdamageBoost = [<-26, 5.85, -77.25>, Red, 70, `Upgrade Damage: {}`(70)]
+        gvar gprojectileBoost = [<-30, 5.85, -77.25>, Blue, 50, `Upgrade Attack Fast: {}`(50)]
+
+        gvar ghealthBoost = [<-18, 5.85, -81.25>, White, 50, `Upgrade Life: {}`(50)]
+        gvar ghealthTime = [<-22, 5.85, -81.25>, White, 150, `Upgrade Healing: {}`(150)]
+        gvar gspeedBoost = [<-26, 5.85, -81.25>, Green, 750, `Upgrade Run: {}`(750)]
+
+        gvar gunlockAbilityOne = [<-16, 6.03, -66.5>, Purple, 450, `Unlock Ability 1: {}`(450)]
+        gvar gunlockUltimate = [<-20, 6.03, -66.5>, Purple, 900, `Unlock Ultimate Ability: {}`(900)]
+        gvar gunlockAbilityTwo = [<-24, 6.03, -66.5>, Purple, 450, `Unlock Ability 2: {}`(450)]
+
+Rule "Setup Store Locations"
+    Event
+        On Global
+    Actions
+        CreateBuyCircle(gmoneyTime[0], gmoneyTime[1], gmoneyTime[3])
+        CreateBuyCircle(gmoneyElim[0], gmoneyElim[1], gmoneyElim[3])
+        CreateBuyCircle(gdamageBoost[0], gdamageBoost[1], gdamageBoost[3])
+        CreateBuyCircle(gprojectileBoost[0], gprojectileBoost[1], gprojectileBoost[3])
+
+        CreateBuyCircle(ghealthBoost[0], ghealthBoost[1], ghealthBoost[3])
+        CreateBuyCircle(ghealthTime[0], ghealthTime[1], ghealthTime[3])
+        CreateBuyCircle(gspeedBoost[0], gspeedBoost[1], gspeedBoost[3])
+
+        CreateBuyCircle(gunlockAbilityOne[0], gunlockAbilityOne[1], gunlockAbilityOne[3])
+        CreateBuyCircle(gunlockUltimate[0], gunlockUltimate[1], gunlockUltimate[3])
+        CreateBuyCircle(gunlockAbilityTwo[0], gunlockAbilityTwo[1], gunlockAbilityTwo[3])
+
+        CreateEffect(exitPortalLocation, light shaft, Red)
+        GameText(Everyone, `Exit`,(exitPortalLocation + Up), 1.5)
+
+Rule "Setup Player"
+    Event
+        On Each Player
+        All
+        All
+    Actions
+        Wait(0.016, Ignore Condition)
+
+        Set Ability 1 Enabled
+            Event Player
+            false
+        Set Ability 2 Enabled
+            Event Player
+            false
+        Set Ultimate Ability Enabled
+            Event Player
+            false
+
+        pvar money = 0
+        pvar moneyTime = 10
+        pvar moneyElim = 15
+        pvar healthBoost = 0
+        pvar healthTime = 0
+        pvar damageBoost = 0
+        pvar speedBoost = 0
+        pvar projectileBoost = 0
+        pvar unlockedAbilityOne = false
+        pvar unlockedAbilityTwo = false
+        pvar unlockedUltimate = false
+        pvar shopOnCooldown = false
+        pvar shopCooldownTimer = 0
+        pvar shopCooldownTimerTextId = 0
+        pvar playerInShop = false
+        pvar playerShopConnectingTimer = 0
+        pvar holdingTeleportKey = false
+        pvar takenDamage = false
+        pvar isMoving = false
+
+        ResetPlayerUI(Event Player)
+
+
+// Shop Methods and Loops
+Rule "Enter Shop" // Modify this will teleport code after upgrades
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        Event Player.interacting
+        pvar shopOnCooldown == false
+        pvar playerInShop == false
+        pvar playerShopConnectingTimer >= 3
+    Actions
+        Set Status
+            Event Player
+            Null
+            Invincible
+            9999
+        Set Status
+            Event Player
+            Null
+            Phased Out
+            9999
+        Set Damage Dealt
+            Event Player
+            0
+        Wait(0.25, Ignore Condition)
+        Teleport
+            Event Player
+            shopTeleportLocation
+        pvar playerInShop = true
+        pvar playerShopConnectingTimer = 0
+        pvar holdingTeleportKey = false
+
+Rule "Exit Shop"
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        Distance Between
+            Event Player
+            gvar exitPortalLocation
+        <= 1.5
+    Actions
+        Clear Status
+            Event Player
+            Invincible
+        Clear Status
+            Event Player
+            Phased Out
+        Set Damage Dealt
+            Event Player
+            100 + pvar damageBoost
+        Respawn(Event Player)
+        pvar shopOnCooldown = true
+        pvar playerInShop = false
+
+        BigHud(Left, `Cooldown: {}`(16 - pvar shopCooldownTimer), Red)
+        pvar shopCooldownTimerTextId = Last Text Id
+
+Rule "Shop Loop - Cooldown Timer"
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        pvar shopOnCooldown
+    Actions
+        pvar shopCooldownTimer += 1
+        Wait(1s, Ignore Condition)
+        Loop If Condition Is True
+
+Rule "Shop - Reset Cooldown State"
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        pvar shopCooldownTimer > 15
+    Actions
+        pvar shopOnCooldown = false
+        pvar shopCooldownTimer = 0
+        Destroy HUD Text
+            pvar shopCooldownTimerTextId
+
+
+Rule "Shop Loop - Hold Interact Counter"
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        Event Player.interacting
+        Event Player.moving == false
+        pvar playerInShop == false
+        Is Alive(Event Player)
+    Actions
+        Msg(Event Player, `Trade Connecting: {}`(3 - pvar playerShopConnectingTimer))
+        pvar holdingTeleportKey = true
+        Wait(1s, Ignore Condition)
+        pvar playerShopConnectingTimer += 1
+        Loop If Condition Is True
+
+Rule "Shop - Interact No Longer Held"
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        pvar holdingTeleportKey
+        Event Player.interacting == false
+    Actions
+        pvar playerShopConnectingTimer = 0
+        pvar holdingTeleportKey = false
+
+Rule "Shop Loop - Holding Interact In Combat"
+    Event
+        Player Took Damage
+        All
+        All
+    Conditions
+        pvar holdingTeleportKey
+        pvar takenDamage
+    Actions
+        pvar playerShopConnectingTimer = 0
+        pvar holdingTeleportKey = false
+        Msg(Event Player, `Trade Connect Stopped`)
+
+
+// Looping Events
+Rule "Loop - Damage Boost"
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        pvar damageBoost > 0
+    Actions
+        Set Damage Dealt
+            Event Player
+            100 + pvar damageBoost
+
+Rule "Loop - Money Generator"
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        pvar playerInShop != true
+    Actions
+        pvar money += pvar moneyTime
+        Wait(3, Ignore Condition)
+        Loop
+
+Rule "Loop - Money On Player Kill"
+    Event
+        Player Earned Elimination
+        All
+        All
+    Conditions
+        Attacker != Victim
+    Actions
+        pvar money += pvar moneyElim
+
+Rule "Loop - Money On Player Final Hit"
+    Event
+        Player Dealt Final Blow
+        All
+        All
+    Conditions
+        Attacker != Victim
+    Actions
+        pvar money += (50 + pvar moneyElim)
+
+Rule "Loop - Money on Damage Dealt"
+    Event
+        Player Dealt Damage
+        All
+        All
+    Conditions
+        Attacker != Victim
+    Actions
+        pvar money += (Event Damage * 0.25);
+
+Rule "Loop - Disable Global Variables"
+    Event
+        On Global
+    Conditions
+        Is Game In Progress
+    Actions
+        Set Match Time
+            10000
+        Disable Built-In Game Mode Scoring
+
+Rule "Loop - Disable Player Variables"
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        Is Game In Progress
+    Actions
+        Modify Player Score
+            Event Player
+            0
+        Set Match Time
+            3600
+
+Rule "Loop - Check Player In Combat (Took)"
+    Event
+        Player Took Damage
+        All
+        All
+    Actions
+        pvar takenDamage = true
+
+Rule "Loop - Check Player In Combat (Dealt)"
+    Event
+        Player Dealt Damage
+        All
+        All
+    Actions
+        pvar takenDamage = true
+
+Rule "Loop - Check Player Out Of Combat"
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        pvar takenDamage
+    Actions
+        Wait(1s, Ignore Condition)
+        pvar takenDamage = false
+
+Rule "Loop - Check Player Is Moving"
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        Event Player.moving
+    Actions
+        pvar isMoving = true
+
+Rule "Loop - Check Player Is Not Moving"
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        Event Player.moving == false
+    Actions
+        pvar isMoving = false
+
+
+%GenBuyEvent
+    Event
+        On Each Player
+        All
+        All
+
+%GenBuyEvent
+    Event
+        On Each Player
+        All
+        All
+
+%GenBuyConditions(price, pos)
+    Event Player.interacting == true
+    Distance Between
+        Event Player
+        pos
+    <= 1.25
+    pvar money >= price
+    // Maybe add check for playerInShop?
+
+%GenBuyBaseActionsPre(price, pos, color)
+    pvar money -= price
+    Msg(Event Player, `{} {}`("Upgrade", "Bought"))
+    Play Effect
+        Visible_To: Event Player
+        Type: ring explosion
+        Color: color
+        Position: pos
+        Radius: 3
+
+%GenBuyBaseActionsPost
+    Skip If(Event Player.crouching != true, 2)
+    Wait(0.016, Ignore Condition)
+    Loop If Condition Is True
+
+// Buy Rules
+Rule "Buy Money / Time"
+    GenBuyEvent()
+    Conditions
+        GenBuyConditions(gmoneyTime[2], gmoneyTime[0])
+        pvar moneyTime < 2499
+    Actions
+        GenBuyBaseActionsPre(gmoneyTime[2], gmoneyTime[0], gmoneyTime[1])
+        pvar moneyTime += 2
+        GenBuyBaseActionsPost()
+
+Rule "Buy Money On Kill"
+    GenBuyEvent()
+    Conditions
+        GenBuyConditions(gmoneyElim[2], gmoneyElim[0])
+    Actions
+        GenBuyBaseActionsPre(gmoneyElim[2], gmoneyElim[0], gmoneyElim[1])
+        pvar moneyElim += 15
+        GenBuyBaseActionsPost()
+
+Rule "Buy Health Boost"
+    GenBuyEvent()
+    Conditions
+        GenBuyConditions(ghealthBoost[2], ghealthBoost[0])
+    Actions
+        GenBuyBaseActionsPre(ghealthBoost[2], ghealthBoost[0], ghealthBoost[1])
+        pvar healthBoost += 2
+        Set Max Health
+            Event Player
+            100 + pvar healthBoost
+        Heal
+            Event Player
+            Null
+            Max Health(Event Player)
+        GenBuyBaseActionsPost()
+
+Rule "Buy Health Regen"
+    GenBuyEvent()
+    Conditions
+        GenBuyConditions(ghealthTime[2], ghealthTime[0])
+    Actions
+        GenBuyBaseActionsPre(ghealthTime[2], ghealthTime[0], ghealthTime[1])
+
+        pvar healthTime += 2
+
+        Stop Heal Over Time
+            Last Heal Over Time ID
+
+        Start Heal Over Time
+            Event Player
+            Event Player
+            9999
+            pvar healthTime
+
+        GenBuyBaseActionsPost()
+
+Rule "Buy Damage Boost"
+    GenBuyEvent()
+    Conditions
+        GenBuyConditions(gdamageBoost[2], gdamageBoost[0])
+    Actions
+        GenBuyBaseActionsPre(gdamageBoost[2], gdamageBoost[0], gdamageBoost[1])
+        pvar damageBoost += 2
+        GenBuyBaseActionsPost()
+
+Rule "Buy Speed Boost"
+    GenBuyEvent()
+    Conditions
+        GenBuyConditions(gspeedBoost[2], gspeedBoost[0])
+        pvar speedBoost < 100
+    Actions
+        GenBuyBaseActionsPre(gspeedBoost[2], gspeedBoost[0], gspeedBoost[1])
+        pvar speedBoost += 1
+        Set Move Speed
+            Event Player
+            100 + pvar speedBoost
+        GenBuyBaseActionsPost()
+
+Rule "Buy Projectile Speed"
+    GenBuyEvent()
+    Conditions
+        GenBuyConditions(gprojectileBoost[2], gprojectileBoost[0])
+    Actions
+        GenBuyBaseActionsPre(gprojectileBoost[2], gprojectileBoost[0], gprojectileBoost[1])
+        pvar projectileBoost += 2
+        Set Projectile Speed
+            Event Player
+            100 + pvar projectileBoost
+        GenBuyBaseActionsPost()
+
+Rule "Buy Ability One"
+    GenBuyEvent()
+    Conditions
+        GenBuyConditions(gunlockAbilityOne[2], gunlockAbilityOne[0])
+        pvar unlockedAbilityOne != true
+    Actions
+        GenBuyBaseActionsPre(gunlockAbilityOne[2], gunlockAbilityOne[0], gunlockAbilityOne[1])
+        pvar unlockedAbilityOne = true
+        Set Ability 1 Enabled
+            Event Player
+            True
+        GenBuyBaseActionsPost()
+
+Rule "Buy Ability Two"
+    GenBuyEvent()
+    Conditions
+        GenBuyConditions(gunlockAbilityTwo[2], gunlockAbilityTwo[0])
+        pvar unlockedAbilityTwo != true
+    Actions
+        GenBuyBaseActionsPre(gunlockAbilityTwo[2], gunlockAbilityTwo[0], gunlockAbilityTwo[1])
+        pvar unlockedAbilityTwo = true
+        Set Ability 2 Enabled
+            Event Player
+            True
+        GenBuyBaseActionsPost()
+
+Rule "Buy Ultimate Ability"
+    GenBuyEvent()
+    Conditions
+        GenBuyConditions(gunlockUltimate[2], gunlockUltimate[0])
+        pvar unlockedUltimate != true
+    Actions
+        GenBuyBaseActionsPre(gunlockUltimate[2], gunlockUltimate[0], gunlockUltimate[1])
+        pvar unlockedUltimate = true
+        Set Ultimate Ability Enabled
+            Event Player
+            True
+        GenBuyBaseActionsPost()
+
+/*
+Rule "Buy Base"
+    GenBuyEvent()
+    Conditions
+        GenBuyConditions(gvar[2], gvar[0])
+    Actions
+        GenBuyBaseActionsPre(gvar[2], gvar[0], gvar[1])
+        GenBuyBaseActionsPost()
+
+ */
+
+
+// DO TIMER RULES IN RAW OW SCRIPT
+/*Rule "Shop Cooldown Timer"
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        (pvar shopOnCooldown) and (pvar shopCooldownTimer > 0)
+    Actions
+        pvar shopCooldownTimer -= 1
+        Wait(1s, Ignore Condition)
+        Loop If Condition Is True
+
+Rule "Shop Cooldown Reset Watcher"
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        pvar shopOnCooldown
+        pvar shopCooldownTimer <= 1
+    Actions
+        pvar shopOnCooldown = false
+        pvar shopCooldownTimer = 15
+        Destroy Hud Text(pvar shopCooldownTimerTextId)
+        */
+
+//for loc in storeLocations:
+//    GenerateBuyRule(loc[0], loc[1], loc[2])
+
+Disabled Rule "Coordinate Viewer"
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        Has Spawned(Event Player)
+        Event Player.moving
+        Event Player.crouching
+        Is Communicating Any Voice Line(Event Player)
+    Actions
+        Create Effect
+            Visible_To: Event Player
+            Type: Sphere
+            Color: White
+            Pos: Event Player.facing + Event Player.eyepos
+            Radius: 0.20
+            Reevaluation: Visible To
+        Create Hud Text
+            Visible_To: Event Player
+            Header: Null
+            Subheader: Null
+            Text: Event Player.facing + Event Player.eyepos
+            Location: Left
+            Sort_Order: Null
+            Header_Color: White
+            Subheader_Color: White
+            Text_Color: White
+            Reevaluation: Visible To And String
+
+%GenerateBuyRule(pos, color, price, name_)
+    Rule "Buy Upgrade"
+        Event
+            On Each Player
+            All
+            All
+        Conditions
+            Event Player.interacting
+            //pvar money >= price
+            Distance Between(Event Player, pos) <= 1.25
+        Actions
+            //pvar money -= price
+            Msg(Event Player, `{} {}`("Upgrade", "Bought"))
+            Play Effect
+                Visible_To: Event Player
+                Type: ring explosion
+                Color: color
+                Position: pos
+                Radius: 3
