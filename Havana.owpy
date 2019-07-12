@@ -362,6 +362,7 @@ Rule "Loop - Late Joins Money Generatior"
         if gvar matchTimeSeconds % 120 == 0:
             gvar matchTimeMultiplier += 1
 
+        Wait(1s, Ignore Condition)
         Loop If Condition Is True
 
 Rule "Loop - Disable Global Variables"
