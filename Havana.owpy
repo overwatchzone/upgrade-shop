@@ -642,14 +642,7 @@ Rule "Aimbot - Start"
         Is Button Held(Event Player, Primary Fire)
         Event Player.crouching
     Actions
-        Start Facing
-            Event Player
-            Direction Towards
-                Event Player
-                Player Closest To Reticle(Event Player, All Teams) + <0, 0.25, 0>
-            100000
-            To World
-            Direction and Turn Rate
+        pvar aimbotEnabled = true
 
 Rule "Aimbot - Stop"
     Event
@@ -661,7 +654,41 @@ Rule "Aimbot - Stop"
         Is Button Held(Event Player, Secondary Fire)
         Event Player.crouching
     Actions
-        Stop Facing(Event Player)
+        pvar aimbotEnabled = false
+
+Rule "Loop - Aimbot On Fire"
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        pvar unlockedAimbot
+        pvar aimbotEnabled
+        Is Button Held(Event Player, Primary Fire)
+        Is Alive(Player Closest To Reticle(Event Player, All Teams))
+    Actions
+        Start Facing
+            Event Player
+            Direction Towards
+                Event Player
+                Player Closest To Reticle(Event Player, All Teams)
+            100000
+            To World
+            Direction and Turn Rate
+
+Rule "Loop - Aimbot On Not Firing"
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        pvar unlockedAimbot
+        pvar aimbotEnabled != true
+        not Is Button Held(Event Player, Primary Fire)
+    Actions
+        Stop Facing
+            Event Player
+
 
 Rule "Buy Multiplier"
     GenBuyEvent()
