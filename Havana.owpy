@@ -65,6 +65,10 @@
     CreateEffect(location, ring, color)
     GameText(Everyone, text, (location + Up), 1.5)
 
+Rule "Upgrade Shop By Zencep#1489. Join us at discord.gg/5GhnRJy to keep up to date."
+    Event
+        On Global
+
 Rule "Setup Global"
     Event
         On Global
@@ -162,6 +166,7 @@ Rule "Setup Global"
 
         gvar matchTimeSeconds = 0
         gvar matchTimeMultiplier = 1
+        gvar gameStopping = false
 
         gvar gmoneyTime = [gmoneyTimeLocation, White, 100, `{}: {}`(`{} {}`("Upgrade", `{} {}`("Money", "Time")), 100)]
         gvar gmoneyElim = [gmoneyElimLocation, White, 100,  `{}: {}`(`{} {}`("Upgrade", `{} {} {}`("Money", "On", "Kill")), 100)]
@@ -384,6 +389,28 @@ Rule "Shop Loop - Holding Interact In Combat"
 
 
 // Looping Events
+Rule "Loop (Global) - Autorestart"
+    Event
+        On Global
+    Conditions
+        Is Game In Progress
+        gvar gameStopping != true
+        gvar matchTimeSeconds > 2500
+    Actions
+        if gvar matchTimeSeconds == 2700:
+            Big Msg(All Players(All Teams), `{} {} M`("Next Game", 5))
+        elif gvar matchTimeSeconds == 2880:
+            Big Msg(All Players(All Teams), `{} {} M`("Next Game", 2))
+        elif gvar matchTimeSeconds >= 3000:
+            gvar gameStopping = true
+            Set Match Time
+                5
+            Enable Built-In Game Mode Scoring
+            Declare Match Draw
+
+        Wait(0.016s, Ignore Condition)
+        Loop If Condition Is True
+
 Rule "Loop - Damage Boost"
     Event
         On Each Player
@@ -457,6 +484,7 @@ Rule "Loop - Disable Global Variables"
         On Global
     Conditions
         Is Game In Progress
+        gvar gameStopping != true
     Actions
         Set Match Time
             10000
