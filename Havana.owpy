@@ -69,6 +69,8 @@ Rule "Setup Global"
     Event
         On Global
     Actions
+        gvar matchTimeSeconds = 0
+        gvar matchTimeMultiplier = 1
         gvar shopTeleportLocation = <-15, 6, -80>
         gvar exitPortalLocation = <-4.5, 6, -79.25>
         gvar buyMultiplierLocation = <-2, 6, -92>
@@ -88,7 +90,7 @@ Rule "Setup Global"
 
         gvar gcommitSuicide = [<-8, 6, -92>, Red, 500, `Die Here: {}`(500)]
         gvar gunlockLowGravity = [<-8, 6.03, -66.5>, Yellow, 1500000, `Superb Jump: {}`(1500000)]
-        gvar gunlockAimbot = [<0, 6.03, -66.5>, Red, 3000000, `Banned Attack: {}`(3000000)]
+        gvar gunlockAimbot = [<0, 6.03, -66.5>, Red, 10000000, `Banned Attack: {}`(10000000)]
 
 Rule "Setup Store Locations"
     Event
@@ -135,7 +137,7 @@ Rule "Setup Player"
             Event Player
             false
 
-        pvar money = 0
+        pvar money = (10 * gvar matchTimeMultiplier) * gvar matchTimeSeconds
         pvar moneyTime = 10
         pvar moneyElim = 15
         pvar healthBoost = 0
@@ -348,6 +350,19 @@ Rule "Loop - Money on Damage Dealt"
         Attacker != Victim
     Actions
         pvar money += (Event Damage * 0.25);
+
+Rule "Loop - Late Joins Money Generatior"
+    Event
+        On Global
+    Conditions
+        Is Game In Progress
+    Actions
+        gvar matchTimeSeconds += 1
+
+        if gvar matchTimeSeconds % 120 == 0:
+            gvar matchTimeMultiplier += 1
+
+        Loop If Condition Is True
 
 Rule "Loop - Disable Global Variables"
     Event
