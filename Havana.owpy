@@ -182,7 +182,7 @@ Rule "Setup Global"
         gvar gunlockAbilityTwo = [gunlockAbilityTwoLocation, Purple, 350, `Unlock Ability 2: {}`(350)]
 
         gvar gcommitSuicide = [gcommitSuicideLocation, Red, 500, `Die Here: {}`(500)]
-        gvar gunlockLowGravity = [gunlockLowGravityLocation, Yellow, 1500000, `Superb Jump: {}`(1500000)]
+        gvar gunlockLowGravity = [gunlockLowGravityLocation, Yellow, 1500000, `Slow Fall: {}`(1500000)]
         gvar gunlockAimbot = [gunlockAimbotLocation, Red, 10000000, `Banned Attack: {}`(10000000)]
 
 Rule "Setup Store Locations"
@@ -210,7 +210,7 @@ Rule "Setup Store Locations"
         GameText(Everyone, `Exit`, (exitPortalLocation + Up), 1.5)
 
         CreateEffect(buyMultiplierLocation, ring, Blue)
-        GameText(Everyone, `Buy Faster`, (buyMultiplierLocation + Up), 1.5)
+        GameText(Everyone, `Buy More On Upgrade`, (buyMultiplierLocation + Up), 1.5)
 
 Rule "Setup Player"
     Event
