@@ -61,9 +61,28 @@
     BigHud(Left, `Money On Kill: {}`(pvar moneyElim), White)
     BigHud(Left, `Money Over Time: {}`(pvar moneyTime), White)
 
+    // Create game texts per player.
+    GameText(Event Player, pvar gmoneyTime[3], (pvar gmoneyTime[0] + Up), 1.5)
+    GameText(Event Player, pvar gmoneyElim[3], (pvar gmoneyElim[0] + Up), 1.5)
+    GameText(Event Player, pvar gdamageBoost[3], (pvar gdamageBoost[0] + Up), 1.5)
+    GameText(Event Player, pvar gprojectileBoost[3], (pvar gprojectileBoost[0] + Up), 1.5)
+
+    GameText(Event Player, pvar ghealthBoost[3], (pvar ghealthBoost[0] + Up), 1.5)
+    GameText(Event Player, pvar ghealthTime[3], (pvar ghealthTime[0] + Up), 1.5)
+    GameText(Event Player, pvar gspeedBoost[3], (pvar gspeedBoost[0] + Up), 1.5)
+
 %CreateBuyCircle(location, color, text)
-    CreateEffect(location, ring, color)
-    GameText(Everyone, text, (location + Up), 1.5)
+   CreateEffect(location, ring, color)
+
+%CreateBuyCirclePlayer(location, color, text)
+    Create Effect
+        Visible_To: Event Player
+        Type: ring
+        Color: color
+        Position: location
+        Radius: 1.5
+        Reevaluation: Visible To
+    //GameText(Everyone, text, (location + Up), 1.5)
 
 Rule "Upgrade Shop By Zencep#1489. Join us at discord.gg/5GhnRJy to keep up to date."
     Event
@@ -168,15 +187,6 @@ Rule "Setup Global"
         gvar matchTimeMultiplier = 1
         gvar gameStopping = false
 
-        gvar gmoneyTime = [gmoneyTimeLocation, White, 100, `{}: {}`(`{} {}`("Upgrade", `{} {}`("Money", "Time")), 100)]
-        gvar gmoneyElim = [gmoneyElimLocation, White, 100,  `{}: {}`(`{} {}`("Upgrade", `{} {} {}`("Money", "On", "Kill")), 100)]
-        gvar gdamageBoost = [gdamageBoostLocation, Red, 70, `Upgrade Damage: {}`(70)]
-        gvar gprojectileBoost = [gprojectileBoostLocation, Blue, 50, `Upgrade Attack Fast: {}`(50)]
-
-        gvar ghealthBoost = [ghealthBoostLocation, White, 50, `Upgrade Life: {}`(50)]
-        gvar ghealthTime = [ghealthTimeLocation, White, 150, `Upgrade Healing: {}`(150)]
-        gvar gspeedBoost = [gspeedBoostLocation, Green, 750, `Upgrade Run: {}`(750)]
-
         gvar gunlockAbilityOne = [gunlockAbilityOneLocation, Purple, 350, `Unlock Ability 1: {}`(350)]
         gvar gunlockUltimate = [gunlockUltimateLocation, Purple, 700, `Unlock Ultimate Ability: {}`(700)]
         gvar gunlockAbilityTwo = [gunlockAbilityTwoLocation, Purple, 350, `Unlock Ability 2: {}`(350)]
@@ -189,22 +199,20 @@ Rule "Setup Store Locations"
     Event
         On Global
     Actions
-        CreateBuyCircle(gmoneyTime[0], gmoneyTime[1], gmoneyTime[3])
-        CreateBuyCircle(gmoneyElim[0], gmoneyElim[1], gmoneyElim[3])
-        CreateBuyCircle(gdamageBoost[0], gdamageBoost[1], gdamageBoost[3])
-        CreateBuyCircle(gprojectileBoost[0], gprojectileBoost[1], gprojectileBoost[3])
-
-        CreateBuyCircle(ghealthBoost[0], ghealthBoost[1], ghealthBoost[3])
-        CreateBuyCircle(ghealthTime[0], ghealthTime[1], ghealthTime[3])
-        CreateBuyCircle(gspeedBoost[0], gspeedBoost[1], gspeedBoost[3])
-
         CreateBuyCircle(gunlockAbilityOne[0], gunlockAbilityOne[1], gunlockAbilityOne[3])
+        GameText(Everyone, gunlockAbilityOne[3], (gunlockAbilityOne[0] + Up), 1.5)
         CreateBuyCircle(gunlockUltimate[0], gunlockUltimate[1], gunlockUltimate[3])
+        GameText(Everyone, gunlockUltimate[3], (gunlockUltimate[0] + Up), 1.5)
         CreateBuyCircle(gunlockAbilityTwo[0], gunlockAbilityTwo[1], gunlockAbilityTwo[3])
+        GameText(Everyone, gunlockAbilityTwo[3], (gunlockAbilityTwo[0] + Up), 1.5)
+
 
         CreateBuyCircle(gcommitSuicide[0], gcommitSuicide[1], gcommitSuicide[3])
+        GameText(Everyone, gcommitSuicide[3], (gcommitSuicide[0] + Up), 1.5)
         CreateBuyCircle(gunlockLowGravity[0], gunlockLowGravity[1], gunlockLowGravity[3])
+        GameText(Everyone, gunlockLowGravity[3], (gunlockLowGravity[0] + Up), 1.5)
         CreateBuyCircle(gunlockAimbot[0], gunlockAimbot[1], gunlockAimbot[3])
+        GameText(Everyone, gunlockAimbot[3], (gunlockAimbot[0] + Up), 1.5)
 
         CreateEffect(exitPortalLocation, light shaft, Red)
         GameText(Everyone, `Exit`, (exitPortalLocation + Up), 1.5)
@@ -254,6 +262,24 @@ Rule "Setup Player"
         pvar buyMultiplier = 1
         pvar lowGravityEnabled = false
         pvar aimbotEnabled = false
+
+        pvar gmoneyTime = [gmoneyTimeLocation, White, 100, `{}: {}`(`{} {}`("Upgrade", `{} {}`("Money", "Time")), 100 * pvar buyMultiplier)]
+        pvar gmoneyElim = [gmoneyElimLocation, White, 100,  `{}: {}`(`{} {}`("Upgrade", `{} {} {}`("Money", "On", "Kill")), 100 * pvar buyMultiplier)]
+        pvar gdamageBoost = [gdamageBoostLocation, Red, 70, `Upgrade Damage: {}`(70 * pvar buyMultiplier)]
+        pvar gprojectileBoost = [gprojectileBoostLocation, Blue, 50, `Upgrade Attack Fast: {}`(50 * pvar buyMultiplier)]
+
+        pvar ghealthBoost = [ghealthBoostLocation, White, 50, `Upgrade Life: {}`(50 * pvar buyMultiplier)]
+        pvar ghealthTime = [ghealthTimeLocation, White, 150, `Upgrade Healing: {}`(150 * pvar buyMultiplier)]
+        pvar gspeedBoost = [gspeedBoostLocation, Green, 750, `Upgrade Run: {}`(750 * pvar buyMultiplier)]
+
+        CreateBuyCircle(pvar gmoneyTime[0], pvar gmoneyTime[1], pvar gmoneyTime[3])
+        CreateBuyCircle(pvar gmoneyElim[0], pvar gmoneyElim[1], pvar gmoneyElim[3])
+        CreateBuyCircle(pvar gdamageBoost[0], pvar gdamageBoost[1], pvar gdamageBoost[3])
+        CreateBuyCircle(pvar gprojectileBoost[0], pvar gprojectileBoost[1], pvar gprojectileBoost[3])
+
+        CreateBuyCircle(pvar ghealthBoost[0], pvar ghealthBoost[1], pvar ghealthBoost[3])
+        CreateBuyCircle(pvar ghealthTime[0], pvar ghealthTime[1], pvar ghealthTime[3])
+        CreateBuyCircle(pvar gspeedBoost[0], pvar gspeedBoost[1], pvar gspeedBoost[3])
 
         ResetPlayerUI(Event Player)
 
@@ -586,28 +612,28 @@ Rule "Loop - Check Player Is Not Moving"
 Rule "Buy Money / Time"
     GenBuyEvent()
     Conditions
-        GenBuyConditions((gmoneyTime[2] * pvar buyMultiplier), gmoneyTime[0])
+        GenBuyConditions((pvar gmoneyTime[2] * pvar buyMultiplier), pvar gmoneyTime[0])
         pvar moneyTime < 2499
     Actions
-        GenBuyBaseActionsPre((gmoneyTime[2] * pvar buyMultiplier), gmoneyTime[0], gmoneyTime[1])
+        GenBuyBaseActionsPre((pvar gmoneyTime[2] * pvar buyMultiplier), pvar gmoneyTime[0], pvar gmoneyTime[1])
         pvar moneyTime += (2 * pvar buyMultiplier)
         GenBuyBaseActionsPost()
 
 Rule "Buy Money On Kill"
     GenBuyEvent()
     Conditions
-        GenBuyConditions((gmoneyElim[2] * pvar buyMultiplier), gmoneyElim[0])
+        GenBuyConditions((pvar gmoneyElim[2] * pvar buyMultiplier), pvar gmoneyElim[0])
     Actions
-        GenBuyBaseActionsPre((gmoneyElim[2] * pvar buyMultiplier), gmoneyElim[0], gmoneyElim[1])
+        GenBuyBaseActionsPre((pvar gmoneyElim[2] * pvar buyMultiplier), pvar gmoneyElim[0], pvar gmoneyElim[1])
         pvar moneyElim += (15 * pvar buyMultiplier)
         GenBuyBaseActionsPost()
 
 Rule "Buy Health Boost"
     GenBuyEvent()
     Conditions
-        GenBuyConditions((ghealthBoost[2] * pvar buyMultiplier), ghealthBoost[0])
+        GenBuyConditions((pvar ghealthBoost[2] * pvar buyMultiplier), pvar ghealthBoost[0])
     Actions
-        GenBuyBaseActionsPre((ghealthBoost[2] * pvar buyMultiplier), ghealthBoost[0], ghealthBoost[1])
+        GenBuyBaseActionsPre((pvar ghealthBoost[2] * pvar buyMultiplier), pvar ghealthBoost[0], pvar ghealthBoost[1])
         pvar healthBoost += (2 * pvar buyMultiplier)
         Set Max Health
             Event Player
@@ -621,9 +647,9 @@ Rule "Buy Health Boost"
 Rule "Buy Health Regen"
     GenBuyEvent()
     Conditions
-        GenBuyConditions((ghealthTime[2] * pvar buyMultiplier), ghealthTime[0])
+        GenBuyConditions((pvar ghealthTime[2] * pvar buyMultiplier), pvar ghealthTime[0])
     Actions
-        GenBuyBaseActionsPre((ghealthTime[2] * pvar buyMultiplier), ghealthTime[0], ghealthTime[1])
+        GenBuyBaseActionsPre((pvar ghealthTime[2] * pvar buyMultiplier), pvar ghealthTime[0], pvar ghealthTime[1])
 
         pvar healthTime += (2 * pvar buyMultiplier)
 
@@ -641,19 +667,19 @@ Rule "Buy Health Regen"
 Rule "Buy Damage Boost"
     GenBuyEvent()
     Conditions
-        GenBuyConditions((gdamageBoost[2] * pvar buyMultiplier), gdamageBoost[0])
+        GenBuyConditions((pvar gdamageBoost[2] * pvar buyMultiplier), pvar gdamageBoost[0])
     Actions
-        GenBuyBaseActionsPre((gdamageBoost[2] * pvar buyMultiplier), gdamageBoost[0], gdamageBoost[1])
+        GenBuyBaseActionsPre((pvar gdamageBoost[2] * pvar buyMultiplier), pvar gdamageBoost[0], pvar gdamageBoost[1])
         pvar damageBoost += (2 * pvar buyMultiplier)
         GenBuyBaseActionsPost()
 
 Rule "Buy Speed Boost"
     GenBuyEvent()
     Conditions
-        GenBuyConditions((gspeedBoost[2] * pvar buyMultiplier), gspeedBoost[0])
+        GenBuyConditions((pvar gspeedBoost[2] * pvar buyMultiplier), pvar gspeedBoost[0])
         pvar speedBoost < 100
     Actions
-        GenBuyBaseActionsPre((gspeedBoost[2] * pvar buyMultiplier), gspeedBoost[0], gspeedBoost[1])
+        GenBuyBaseActionsPre((pvar gspeedBoost[2] * pvar buyMultiplier), pvar gspeedBoost[0], pvar gspeedBoost[1])
         pvar speedBoost += 1
         Set Move Speed
             Event Player
@@ -663,9 +689,9 @@ Rule "Buy Speed Boost"
 Rule "Buy Projectile Speed"
     GenBuyEvent()
     Conditions
-        GenBuyConditions((gprojectileBoost[2] * pvar buyMultiplier), gprojectileBoost[0])
+        GenBuyConditions((pvar gprojectileBoost[2] * pvar buyMultiplier), pvar gprojectileBoost[0])
     Actions
-        GenBuyBaseActionsPre((gprojectileBoost[2] * pvar buyMultiplier), gprojectileBoost[0], gprojectileBoost[1])
+        GenBuyBaseActionsPre((pvar gprojectileBoost[2] * pvar buyMultiplier), pvar gprojectileBoost[0], pvar gprojectileBoost[1])
         pvar projectileBoost += (2 * pvar buyMultiplier)
         Set Projectile Speed
             Event Player
