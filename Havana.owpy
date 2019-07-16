@@ -211,6 +211,20 @@ Rule "Setup Global"
         gvar gprestigeCosts = [0, 50000, 125000, 250000]
         gvar gprestigeMax = 3 // 4 total not including prestige 0
 
+        /*
+            Prestige Caps
+
+            [
+                index/level => cap number
+            ]
+        */
+        gvar gmoneyTimeCaps = [900, 2250, 3500, 5000]
+        gvar gmoneyElimCaps = [1250, 2500, 4500, 7500]
+        gvar gdamageBoostCaps = [1000, 2500, 5000, 10000]
+        gvar gprojectileBoostCaps = [45, 65, 85, 100]
+        gvar ghealthBoostCaps = [4500, 7500, 10000, 20000]
+        gvar ghealthTimeCaps = [900, 2500, 5000, 15000]
+
 Rule "Setup Store Locations"
     Event
         On Global
@@ -640,7 +654,7 @@ Rule "Buy Money / Time"
     GenBuyEvent()
     Conditions
         GenBuyConditions((pvar gmoneyTime[2] * pvar buyMultiplier), pvar gmoneyTime[0])
-        pvar moneyTime < 2499
+        pvar moneyTime < gmoneyTimeCaps[pvar currentPrestige]
     Actions
         GenBuyBaseActionsPre((pvar gmoneyTime[2] * pvar buyMultiplier), pvar gmoneyTime[0], pvar gmoneyTime[1])
         pvar moneyTime += (2 * pvar buyMultiplier)
@@ -650,6 +664,7 @@ Rule "Buy Money On Kill"
     GenBuyEvent()
     Conditions
         GenBuyConditions((pvar gmoneyElim[2] * pvar buyMultiplier), pvar gmoneyElim[0])
+        pvar moneyElim < gmoneyElimCaps[pvar currentPrestige]
     Actions
         GenBuyBaseActionsPre((pvar gmoneyElim[2] * pvar buyMultiplier), pvar gmoneyElim[0], pvar gmoneyElim[1])
         pvar moneyElim += (15 * pvar buyMultiplier)
@@ -659,6 +674,7 @@ Rule "Buy Health Boost"
     GenBuyEvent()
     Conditions
         GenBuyConditions((pvar ghealthBoost[2] * pvar buyMultiplier), pvar ghealthBoost[0])
+        pvar healthBoost < ghealthBoostCaps[pvar currentPrestige]
     Actions
         GenBuyBaseActionsPre((pvar ghealthBoost[2] * pvar buyMultiplier), pvar ghealthBoost[0], pvar ghealthBoost[1])
         pvar healthBoost += (2 * pvar buyMultiplier)
@@ -675,6 +691,7 @@ Rule "Buy Health Regen"
     GenBuyEvent()
     Conditions
         GenBuyConditions((pvar ghealthTime[2] * pvar buyMultiplier), pvar ghealthTime[0])
+        pvar healthTime < ghealthTimeCaps[pvar currentPrestige]
     Actions
         GenBuyBaseActionsPre((pvar ghealthTime[2] * pvar buyMultiplier), pvar ghealthTime[0], pvar ghealthTime[1])
 
@@ -695,6 +712,7 @@ Rule "Buy Damage Boost"
     GenBuyEvent()
     Conditions
         GenBuyConditions((pvar gdamageBoost[2] * pvar buyMultiplier), pvar gdamageBoost[0])
+        pvar damageBoost < gdamageBoostCaps[pvar currentPrestige]
     Actions
         GenBuyBaseActionsPre((pvar gdamageBoost[2] * pvar buyMultiplier), pvar gdamageBoost[0], pvar gdamageBoost[1])
         pvar damageBoost += (2 * pvar buyMultiplier)
@@ -717,6 +735,7 @@ Rule "Buy Projectile Speed"
     GenBuyEvent()
     Conditions
         GenBuyConditions((pvar gprojectileBoost[2] * pvar buyMultiplier), pvar gprojectileBoost[0])
+        pvar projectileBoost < gprojectileBoostCaps[pvar currentPrestige]
     Actions
         GenBuyBaseActionsPre((pvar gprojectileBoost[2] * pvar buyMultiplier), pvar gprojectileBoost[0], pvar gprojectileBoost[1])
         pvar projectileBoost += (2 * pvar buyMultiplier)
