@@ -759,7 +759,7 @@ Rule "Buy Next Prestige / Level"
         pvar nextPrestige += 1
         pvar nextPrestigeCost = gprestigeCosts[pvar nextPrestige]
 
-        pvar money = (10 * gvar matchTimeMultiplier) * gvar matchTimeSeconds
+        pvar money = ((10 + gvar matchTimeMultiplier) * pvar currentPrestige) * gvar matchTimeSeconds
         pvar moneyTime = 10
         pvar moneyElim = 15
         pvar healthBoost = 0
