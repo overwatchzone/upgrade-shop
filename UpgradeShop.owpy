@@ -536,7 +536,7 @@ Rule "Loop - Money on Damage Dealt"
     Actions
         pvar money += (Event Damage * 0.25);
 
-Rule "Loop - Late Joins Money Generatior"
+Rule "Loop - Late Joins Money Generator"
     Event
         On Global
     Conditions
