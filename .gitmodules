@@ -1,0 +1,3 @@
+[submodule "OWScript"]
+	path = OWScript
+	url = https://github.com/adapap/OWScript
