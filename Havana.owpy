@@ -88,6 +88,10 @@ Rule "Upgrade Shop By Zencep#1489. Join us at discord.gg/5GhnRJy to keep up to d
     Event
         On Global
 
+Rule "More information on the Overwatch forum post: bit.ly/FtoUpgradePost"
+    Event
+        On Global
+
 Rule "Setup Global"
     Event
         On Global
