@@ -469,9 +469,9 @@ Rule "Loop (Global) - Autorestart"
         gvar matchTimeSeconds > 2500
     Actions
         if gvar matchTimeSeconds == 2700:
-            Big Msg(All Players(All Teams), `{} {} M`("Next Game", 5))
+            Big Msg(Everyone, `{} {} M`("Next Game", 5))
         elif gvar matchTimeSeconds == 2880:
-            Big Msg(All Players(All Teams), `{} {} M`("Next Game", 2))
+            Big Msg(Everyone, `{} {} M`("Next Game", 2))
         elif gvar matchTimeSeconds >= 3000:
             gvar gameStopping = true
             Set Match Time
