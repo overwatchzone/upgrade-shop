@@ -53,6 +53,7 @@
 
 %ResetPlayerUI(player_)
     BigHud(Top, `Credits: {}`(pvar money), White)
+    BigHud(Top, `Diamonds: {}`(pvar diamonds), White)
     BigHud(Left, `Projectile Speed: {}%`(pvar projectileBoost), White)
     BigHud(Left, `Run Speed: {}%`(pvar speedBoost), White)
     BigHud(Left, `Damage: {}%`(pvar damageBoost), White)
@@ -253,6 +254,7 @@ Rule "Setup Player"
             false
 
         pvar money = (10 * gvar matchTimeMultiplier) * gvar matchTimeSeconds
+        pvar diamonds = 0
         pvar moneyTime = 10
         pvar moneyElim = 15
         pvar healthBoost = 0
