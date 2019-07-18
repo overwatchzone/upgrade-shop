@@ -278,9 +278,6 @@ Rule "Setup Player"
         pvar buyMultiplier = 1
         pvar lowGravityEnabled = false
         pvar aimbotEnabled = false
-        pvar currentPrestige = 0
-        pvar nextPrestige = 1
-        pvar nextPrestigeCost = 50000
 
         pvar gmoneyTime = [gmoneyTimeLocation, White, 100, `{}: {}`(`{} {}`("Upgrade", `{} {}`("Money", "Time")), 100 * pvar buyMultiplier)]
         pvar gmoneyElim = [gmoneyElimLocation, White, 100,  `{}: {}`(`{} {}`("Upgrade", `{} {} {}`("Money", "On", "Kill")), 100 * pvar buyMultiplier)]
@@ -774,7 +771,6 @@ Rule "Buy Low Gravity"
     Conditions
         GenBuyConditions(gunlockLowGravity[2], gunlockLowGravity[0])
         pvar unlockedLowGravity != true
-        pvar currentPrestige >= gunlockLowGravity[4]
     Actions
         GenBuyBaseActionsPre(gunlockLowGravity[2], gunlockLowGravity[0], gunlockLowGravity[1])
         pvar unlockedLowGravity = true
@@ -788,7 +784,6 @@ Rule "Buy Aimbot"
     Conditions
         GenBuyConditions(gunlockAimbot[2], gunlockAimbot[0])
         pvar unlockedAimbot != true
-        pvar currentPrestige >= gunlockAimbot[4]
     Actions
         GenBuyBaseActionsPre(gunlockAimbot[2], gunlockAimbot[0], gunlockAimbot[1])
         pvar unlockedAimbot = true
