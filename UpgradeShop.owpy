@@ -52,14 +52,14 @@
         Reevaluation: Visible To And String
 
 %ResetPlayerUI(player_)
-    BigHud(Top, `Money: {}`(pvar money), White)
-    BigHud(Left, `Attack Fast: {}%`(pvar projectileBoost), White)
-    BigHud(Left, `Run: {}%`(pvar speedBoost), White)
+    BigHud(Top, `Credits: {}`(pvar money), White)
+    BigHud(Left, `Projectile Speed: {}%`(pvar projectileBoost), White)
+    BigHud(Left, `Run Speed: {}%`(pvar speedBoost), White)
     BigHud(Left, `Damage: {}%`(pvar damageBoost), White)
     BigHud(Left, `Max Life: {}%`(pvar healthBoost), White)
     BigHud(Left, `Healing Over Time: {}`(pvar healthTime), White)
-    BigHud(Left, `Money On Kill: {}`(pvar moneyElim), White)
-    BigHud(Left, `Money Over Time: {}`(pvar moneyTime), White)
+    BigHud(Left, `Credits On Kill: {}`(pvar moneyElim), White)
+    BigHud(Left, `Credits Over Time: {}`(pvar moneyTime), White)
 
     // Create game texts per player.
     GameText(Event Player, pvar gmoneyTime[3], (pvar gmoneyTime[0] + Up), 1.5)
@@ -306,11 +306,11 @@ Rule "Setup Player"
         pvar gmoneyTime = [gmoneyTimeLocation, White, 100, `{}: {}`(`{} {}`("Upgrade", `{} {}`("Money", "Time")), 100 * pvar buyMultiplier)]
         pvar gmoneyElim = [gmoneyElimLocation, White, 100,  `{}: {}`(`{} {}`("Upgrade", `{} {} {}`("Money", "On", "Kill")), 100 * pvar buyMultiplier)]
         pvar gdamageBoost = [gdamageBoostLocation, Red, 70, `Upgrade Damage: {}`(70 * pvar buyMultiplier)]
-        pvar gprojectileBoost = [gprojectileBoostLocation, Blue, 50, `Upgrade Attack Fast: {}`(50 * pvar buyMultiplier)]
+        pvar gprojectileBoost = [gprojectileBoostLocation, Blue, 50, `Upgrade Projectile Speed: {}`(50 * pvar buyMultiplier)]
 
         pvar ghealthBoost = [ghealthBoostLocation, White, 50, `Upgrade Life: {}`(50 * pvar buyMultiplier)]
         pvar ghealthTime = [ghealthTimeLocation, White, 150, `Upgrade Healing: {}`(150 * pvar buyMultiplier)]
-        pvar gspeedBoost = [gspeedBoostLocation, Green, 750, `Upgrade Run: {}`(750 * pvar buyMultiplier)]
+        pvar gspeedBoost = [gspeedBoostLocation, Green, 750, `Upgrade Run Speed: {}`(750 * pvar buyMultiplier)]
 
         CreateBuyCircle(pvar gmoneyTime[0], pvar gmoneyTime[1], pvar gmoneyTime[3])
         CreateBuyCircle(pvar gmoneyElim[0], pvar gmoneyElim[1], pvar gmoneyElim[3])
@@ -427,7 +427,7 @@ Rule "Shop Loop - Hold Interact Counter"
         pvar playerInShop == false
         Is Alive(Event Player)
     Actions
-        Msg(Event Player, `Trade Connecting: {}`(3 - pvar playerShopConnectingTimer))
+        Msg(Event Player, `Shop Connecting: {}`(3 - pvar playerShopConnectingTimer))
         pvar holdingTeleportKey = true
         Wait(1s, Ignore Condition)
         pvar playerShopConnectingTimer += 1
@@ -456,7 +456,7 @@ Rule "Shop Loop - Holding Interact In Combat"
     Actions
         pvar playerShopConnectingTimer = 0
         pvar holdingTeleportKey = false
-        Msg(Event Player, `Trade Connect Stopped`)
+        Msg(Event Player, `Shop Connect Stopped`)
 
 
 // Looping Events
