@@ -101,7 +101,6 @@ Rule "Setup Global"
             gvar exitPortalLocation = <-4.5, 6, -79.25>
             gvar buyMultiplierLocation = <-2, 6, -92>
             gvar gcommitSuicideLocation = <-8, 6, -92>
-            gvar gprestigeLocation = <-14.04, 6, -89.95>
 
             gvar gmoneyTimeLocation = <-18, 5.85, -77.25>
             gvar gmoneyElimLocation = <-22, 5.85, -77.25>
@@ -123,7 +122,6 @@ Rule "Setup Global"
             gvar exitPortalLocation = <-8.5, 1.6, -4>
             gvar buyMultiplierLocation = <-26, 1.75, -14>
             gvar gcommitSuicideLocation = <-23.5, 7.75, 10.5>
-            gvar gprestigeLocation = <-35.10, 1.75, -6.69>
 
             gvar gmoneyTimeLocation = <-20, 1.6, 6>
             gvar gmoneyElimLocation = <-24, 1.6, 3.6>
@@ -146,7 +144,6 @@ Rule "Setup Global"
             gvar exitPortalLocation = <112.71, 8.72, -31.96>
             gvar buyMultiplierLocation = <129.23, 8.72, -38.12>
             gvar gcommitSuicideLocation = <130.22, 14.74, -36.14>
-            gvar gprestigeLocation = <120.22, 10.72, -14.68>
 
             gvar gmoneyTimeLocation = <121, 8.72, -27.5>
             gvar gmoneyElimLocation = <120, 8.72, -31.5>
@@ -199,8 +196,8 @@ Rule "Setup Global"
         gvar gunlockAbilityTwo = [gunlockAbilityTwoLocation, Purple, 350, `Unlock Ability 2: {}`(350)]
 
         gvar gcommitSuicide = [gcommitSuicideLocation, Red, 500, `Die Here: {}`(500)]
-        gvar gunlockLowGravity = [gunlockLowGravityLocation, Yellow, 1500000, `Slow Fall: {}`(1500000), 1]
-        gvar gunlockAimbot = [gunlockAimbotLocation, Red, 10000000, `Banned Attack: {}`(10000000), 1]
+        gvar gunlockLowGravity = [gunlockLowGravityLocation, Yellow, 0, `Slow Fall: {}`(1500000), 1]
+        gvar gunlockAimbot = [gunlockAimbotLocation, Red, 0, `Banned Attack: {}`(10000000), 1]
         /*
          [
             0 => location
@@ -210,24 +207,6 @@ Rule "Setup Global"
             4 => prestige/level minimum
          ]
          */
-
-        // index = prestige
-        gvar gprestigeCosts = [0, 50000, 125000, 250000]
-        gvar gprestigeMax = 3 // 4 total not including prestige 0
-
-        /*
-            Prestige Caps
-
-            [
-                index/level => cap number
-            ]
-        */
-        gvar gmoneyTimeCaps = [900, 2250, 3500, 5000]
-        gvar gmoneyElimCaps = [1250, 2500, 4500, 7500]
-        gvar gdamageBoostCaps = [1000, 2500, 5000, 10000]
-        gvar gprojectileBoostCaps = [45, 65, 85, 100]
-        gvar ghealthBoostCaps = [4500, 7500, 10000, 20000]
-        gvar ghealthTimeCaps = [900, 2500, 5000, 15000]
 
 Rule "Setup Store Locations"
     Event
@@ -320,10 +299,6 @@ Rule "Setup Player"
         CreateBuyCircle(pvar ghealthBoost[0], pvar ghealthBoost[1], pvar ghealthBoost[3])
         CreateBuyCircle(pvar ghealthTime[0], pvar ghealthTime[1], pvar ghealthTime[3])
         CreateBuyCircle(pvar gspeedBoost[0], pvar gspeedBoost[1], pvar gspeedBoost[3])
-
-        CreateBuyCircle(gprestigeLocation, Purple, `Buy Level`)
-        // gprestigeCosts[pvar nextPrestige]
-        GameText(Event Player, `Buy Next Level: {}`(pvar nextPrestigeCost), (gprestigeLocation + Up), 1.5)
 
         ResetPlayerUI(Event Player)
 
@@ -658,7 +633,7 @@ Rule "Buy Money / Time"
     GenBuyEvent()
     Conditions
         GenBuyConditions((pvar gmoneyTime[2] * pvar buyMultiplier), pvar gmoneyTime[0])
-        pvar moneyTime < gmoneyTimeCaps[pvar currentPrestige]
+        pvar moneyTime < 4500
     Actions
         GenBuyBaseActionsPre((pvar gmoneyTime[2] * pvar buyMultiplier), pvar gmoneyTime[0], pvar gmoneyTime[1])
         pvar moneyTime += (2 * pvar buyMultiplier)
@@ -668,7 +643,6 @@ Rule "Buy Money On Kill"
     GenBuyEvent()
     Conditions
         GenBuyConditions((pvar gmoneyElim[2] * pvar buyMultiplier), pvar gmoneyElim[0])
-        pvar moneyElim < gmoneyElimCaps[pvar currentPrestige]
     Actions
         GenBuyBaseActionsPre((pvar gmoneyElim[2] * pvar buyMultiplier), pvar gmoneyElim[0], pvar gmoneyElim[1])
         pvar moneyElim += (15 * pvar buyMultiplier)
@@ -678,7 +652,6 @@ Rule "Buy Health Boost"
     GenBuyEvent()
     Conditions
         GenBuyConditions((pvar ghealthBoost[2] * pvar buyMultiplier), pvar ghealthBoost[0])
-        pvar healthBoost < ghealthBoostCaps[pvar currentPrestige]
     Actions
         GenBuyBaseActionsPre((pvar ghealthBoost[2] * pvar buyMultiplier), pvar ghealthBoost[0], pvar ghealthBoost[1])
         pvar healthBoost += (2 * pvar buyMultiplier)
@@ -695,7 +668,6 @@ Rule "Buy Health Regen"
     GenBuyEvent()
     Conditions
         GenBuyConditions((pvar ghealthTime[2] * pvar buyMultiplier), pvar ghealthTime[0])
-        pvar healthTime < ghealthTimeCaps[pvar currentPrestige]
     Actions
         GenBuyBaseActionsPre((pvar ghealthTime[2] * pvar buyMultiplier), pvar ghealthTime[0], pvar ghealthTime[1])
 
@@ -716,7 +688,6 @@ Rule "Buy Damage Boost"
     GenBuyEvent()
     Conditions
         GenBuyConditions((pvar gdamageBoost[2] * pvar buyMultiplier), pvar gdamageBoost[0])
-        pvar damageBoost < gdamageBoostCaps[pvar currentPrestige]
     Actions
         GenBuyBaseActionsPre((pvar gdamageBoost[2] * pvar buyMultiplier), pvar gdamageBoost[0], pvar gdamageBoost[1])
         pvar damageBoost += (2 * pvar buyMultiplier)
@@ -739,7 +710,6 @@ Rule "Buy Projectile Speed"
     GenBuyEvent()
     Conditions
         GenBuyConditions((pvar gprojectileBoost[2] * pvar buyMultiplier), pvar gprojectileBoost[0])
-        pvar projectileBoost < gprojectileBoostCaps[pvar currentPrestige]
     Actions
         GenBuyBaseActionsPre((pvar gprojectileBoost[2] * pvar buyMultiplier), pvar gprojectileBoost[0], pvar gprojectileBoost[1])
         pvar projectileBoost += (2 * pvar buyMultiplier)
@@ -747,78 +717,6 @@ Rule "Buy Projectile Speed"
             Event Player
             100 + pvar projectileBoost
         GenBuyBaseActionsPost()
-
-Rule "Buy Next Prestige / Level"
-    GenBuyEvent()
-    Conditions
-        GenBuyConditions(gprestigeCosts[pvar nextPrestige], gprestigeLocation)
-        pvar currentPrestige < gprestigeMax
-    Actions
-        GenBuyBaseActionsPre(gprestigeCosts[pvar nextPrestige], gprestigeLocation, Purple)
-        pvar currentPrestige += 1
-        pvar nextPrestige += 1
-        pvar nextPrestigeCost = gprestigeCosts[pvar nextPrestige]
-
-        pvar money = ((10 + gvar matchTimeMultiplier) * pvar currentPrestige) * gvar matchTimeSeconds
-        pvar moneyTime = 10
-        pvar moneyElim = 15
-        pvar healthBoost = 0
-        pvar healthTime = 0
-        pvar damageBoost = 0
-        pvar speedBoost = 0
-        pvar projectileBoost = 0
-        pvar unlockedAbilityOne = false
-        pvar unlockedAbilityTwo = false
-        pvar unlockedUltimate = false
-        pvar unlockedLowGravity = false
-        pvar unlockedAimbot = false
-        pvar lowGravityEnabled = false
-        pvar aimbotEnabled = false
-
-        Set Max Health
-            Event Player
-            100 + pvar healthBoost
-        Heal
-            Event Player
-            Null
-            Max Health(Event Player)
-
-        Stop Heal Over Time
-            Last Heal Over Time ID
-
-        Start Heal Over Time
-            Event Player
-            Event Player
-            9999
-            pvar healthTime
-
-        Set Move Speed
-            Event Player
-            100 + pvar speedBoost
-
-        Set Projectile Speed
-            Event Player
-            100 + pvar projectileBoost
-
-        Set Ability 1 Enabled
-            Event Player
-            False
-
-        Set Ability 2 Enabled
-            Event Player
-            False
-
-        Set Ultimate Ability Enabled
-            Event Player
-            False
-
-        Set Gravity
-            Event Player
-            100
-
-        Modify Player Score
-            Event Player
-            1
 
 Rule "Buy Ability One"
     GenBuyEvent()
