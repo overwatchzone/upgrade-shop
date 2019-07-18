@@ -225,10 +225,8 @@ Rule "Setup Store Locations"
 
         CreateBuyCircle(gunlockLowGravity[0], gunlockLowGravity[1], gunlockLowGravity[3])
         GameText(Everyone, gunlockLowGravity[3], (gunlockLowGravity[0] + Up), 1.5)
-        GameText(Everyone, `Unlock Level: {}`(gunlockLowGravity[4]), (gunlockLowGravity[0] + <0, 1.5, 0>), 1.5)
         CreateBuyCircle(gunlockAimbot[0], gunlockAimbot[1], gunlockAimbot[3])
         GameText(Everyone, gunlockAimbot[3], (gunlockAimbot[0] + Up), 1.5)
-        GameText(Everyone, `Unlock Level: {}`(gunlockAimbot[4]), (gunlockAimbot[0] + <0, 1.5, 0>), 1.5)
 
         CreateEffect(exitPortalLocation, light shaft, Red)
         GameText(Everyone, `Exit`, (exitPortalLocation + Up), 1.5)
