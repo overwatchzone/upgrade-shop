@@ -1,3 +1,6 @@
 [submodule "OWScript"]
 	path = OWScript
 	url = https://github.com/adapap/OWScript
+[submodule "modules/core"]
+	path = modules/core
+	url = https://github.com/overwatchworkshop/ows-module-core.git
