@@ -1,6 +1,6 @@
 #!/bin/bash
-echo "Compiling to UpgradeShop.ows..."
+echo "Compiling gamemode with OWScript"
 cd ./OWScript
-python OWScript.py ../UpgradeShop.owpy --save ../UpgradeShop.ows
+python OWScript.py ../src/shop.owpy --save ../dist/shop.ows
 echo "--------------------------------"
 echo "UpgradeShop compiled."
