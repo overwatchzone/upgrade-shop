@@ -1,0 +1,53 @@
+Disabled Rule "Hax"
+    Event
+        On Each Player
+        All
+        Slot 0
+    Conditions
+        Is Button Held(Event Player, Primary Fire)
+        Is Button Held(Event Player, Ability 1)
+        Is Button Held(Event Player, Ultimate)
+    Actions
+        pvar money += 100000
+
+Disabled Rule "Debug Coordinates"
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        Event Player.crouching
+        Event Player.interacting
+        Is Firing Primary(Event Player)
+    Actions
+        Msg(Event Player, `You: {}`(Position Of(Event Player)))
+
+Disabled Rule "Coordinate Viewer"
+    Event
+        On Each Player
+        All
+        All
+    Conditions
+        Has Spawned(Event Player)
+        Event Player.moving
+        Event Player.crouching
+        Is Communicating Any Voice Line(Event Player)
+    Actions
+        Create Effect
+            Visible_To: Event Player
+            Type: Sphere
+            Color: White
+            Pos: Event Player.facing + Event Player.eyepos
+            Radius: 0.20
+            Reevaluation: Visible To
+        Create Hud Text
+            Visible_To: Event Player
+            Header: Null
+            Subheader: Null
+            Text: Event Player.facing + Event Player.eyepos
+            Location: Left
+            Sort_Order: Null
+            Header_Color: White
+            Subheader_Color: White
+            Text_Color: White
+            Reevaluation: Visible To And String

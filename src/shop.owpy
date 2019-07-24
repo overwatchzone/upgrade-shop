@@ -11,3 +11,5 @@ Rule "More information on the Overwatch forum post: bit.ly/FtoUpgradePost"
         On Global
 
 #import "lib/global/module.owpy"
+
+#import "lib/debug/module.owpy"
