@@ -1,3 +1,13 @@
 #import "modules/core/ui.owpy"
 #import "modules/core/effects.owpy"
 #import "modules/core/sound.owpy"
+
+Rule "Upgrade Shop By Zencep#1489 (Blizzard). Join us at discord.gg/5GhnRJy to keep up to date."
+    Event
+        On Global
+
+Rule "More information on the Overwatch forum post: bit.ly/FtoUpgradePost"
+    Event
+        On Global
+
+#import "lib/global/module.owpy"
