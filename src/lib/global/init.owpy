@@ -1,0 +1,89 @@
+Rule "Setup Global"
+    Event
+        On Global
+    Actions
+        gvar matchTimeSeconds = 0
+        gvar matchTimeMultiplier = 1
+        gvar gameStopping = false
+
+Rule "Setup Global Locations"
+    Event
+        On Global
+    Actions
+        if get_map() ==  Havana:
+            gvar shopTeleportLocation = <-15, 6, -80>
+            gvar exitPortalLocation = <-4.5, 6, -79.25>
+            gvar buyMultiplierLocation = <-2, 6, -92>
+            gvar gcommitSuicideLocation = <-8, 6, -92>
+
+            gvar gmoneyTimeLocation = <-18, 5.85, -77.25>
+            gvar gmoneyElimLocation = <-22, 5.85, -77.25>
+            gvar gdamageBoostLocation = <-26, 5.85, -77.25>
+            gvar gprojectileBoostLocation = <-30, 5.85, -77.25>
+
+            gvar ghealthBoostLocation = <-18, 5.85, -81.25>
+            gvar ghealthTimeLocation = <-22, 5.85, -81.25>
+            gvar gspeedBoostLocation = <-26, 5.85, -81.25>
+
+            gvar gunlockAbilityOneLocation = <-16, 6.03, -66.5>
+            gvar gunlockUltimateLocation = <-20, 6.03, -66.5>
+            gvar gunlockAbilityTwoLocation = <-24, 6.03, -66.5>
+
+            gvar gunlockLowGravityLocation = <-8, 6.03, -66.5>
+            gvar gunlockAimbotLocation = <0, 6.03, -66.5>
+        elif get_map() == Hollywood:
+            gvar shopTeleportLocation = <-13, 1.6, 5>
+            gvar exitPortalLocation = <-8.5, 1.6, -4>
+            gvar buyMultiplierLocation = <-26, 1.75, -14>
+            gvar gcommitSuicideLocation = <-23.5, 7.75, 10.5>
+
+            gvar gmoneyTimeLocation = <-20, 1.6, 6>
+            gvar gmoneyElimLocation = <-24, 1.6, 3.6>
+            gvar gdamageBoostLocation = <-28, 1.6, 1.2>
+            gvar gprojectileBoostLocation = <-32, 1.6, -1.2>
+
+            gvar ghealthBoostLocation = <-16.2, 1.6, -1>
+            gvar ghealthTimeLocation = <-20.2, 1.6, -3.5>
+            gvar gspeedBoostLocation = <-24.2, 1.6, -6>
+
+            GameText(Everyone, `Abilities Here`, <-20.36, 7, -7.22>, 1.5)
+            gvar gunlockAbilityOneLocation = <-14.3, 1.75, -15>
+            gvar gunlockUltimateLocation = <-16.35, 1.75, -11.2>
+            gvar gunlockAbilityTwoLocation = <-18.4, 1.6, -8.1>
+
+            gvar gunlockLowGravityLocation = <-20.8, 5.75, -14.75>
+            gvar gunlockAimbotLocation = <-17.3, 5.75, -12.5>
+        elif get_map() == Eichenwalde:
+            gvar shopTeleportLocation = <114.52, 10.72, -23.6>
+            gvar exitPortalLocation = <112.71, 8.72, -31.96>
+            gvar buyMultiplierLocation = <129.23, 8.72, -38.12>
+            gvar gcommitSuicideLocation = <130.22, 14.74, -36.14>
+
+            gvar gmoneyTimeLocation = <121, 8.72, -27.5>
+            gvar gmoneyElimLocation = <120, 8.72, -31.5>
+            gvar gdamageBoostLocation = <119, 8.72, -35.5>
+            gvar gprojectileBoostLocation = <118, 8.72, -39.5>
+
+            gvar ghealthBoostLocation = <126, 8.72, -28.75>
+            gvar ghealthTimeLocation = <125, 8.72, -32.75>
+            gvar gspeedBoostLocation = <124, 8.72, -36.75>
+
+            GameText(Everyone, `Abilities Here`, <115.12, 13, -13.67>, 1.5)
+            gvar gunlockAbilityOneLocation = <132, 10.72, 7.25>
+            gvar gunlockUltimateLocation = <128, 10.72, 8.5>
+            gvar gunlockAbilityTwoLocation = <124, 10.72, 9.75>
+
+            gvar gunlockLowGravityLocation = <137, 10.72, 0>
+            gvar gunlockAimbotLocation = <138.25, 10.72, 4>
+
+Rule "Setup One-Off Store Items"
+    Event
+        On Global
+    Actions
+        gvar gunlockAbilityOne = [gunlockAbilityOneLocation, Purple, 350, `Unlock Ability 1: {}`(350)]
+        gvar gunlockUltimate = [gunlockUltimateLocation, Purple, 700, `Unlock Ultimate Ability: {}`(700)]
+        gvar gunlockAbilityTwo = [gunlockAbilityTwoLocation, Purple, 350, `Unlock Ability 2: {}`(350)]
+
+        gvar gcommitSuicide = [gcommitSuicideLocation, Red, 500, `Die Here: {}`(500)]
+        gvar gunlockLowGravity = [gunlockLowGravityLocation, Yellow, 0, `Slow Fall: {}`(1500000), 1]
+        gvar gunlockAimbot = [gunlockAimbotLocation, Red, 0, `Banned Attack: {}`(10000000), 1]
