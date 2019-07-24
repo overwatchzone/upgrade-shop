@@ -8,8 +8,11 @@ You can find the most recent code on our Discord or Overwatch forums post.
 
 ### Links
 [Overwatch Forums Post](https://bit.ly/FtoUpgradePost)
+
 [Trello Board](https://trello.com/b/72ITq4w0/overwatch-upgrade-shop)
+
 [Discord](https://discord.gg/5GhnRJy)
+
 [Developer Stream](https://twitch.tv/Zencep)
 
 ## Development
@@ -17,11 +20,15 @@ You can find the most recent code on our Discord or Overwatch forums post.
 - Sublime Text 3, if you want the officially supported syntax from OWScript
 - Python >= 3.6
 
+-----
+
 ### Cloning the Repo
 Since Upgrade Shop utilizes submodules you have to also clone the submodules.
 ```
  git clone --recurse-submodules repoURL
 ```
+
+-----
 
 ### Understanding the File Structure
 #### `dist/`
@@ -39,8 +46,12 @@ The folder containing all the git submodules that are used throughout the gamemo
 #### `src/lib/`
 The "library" (or collection) of all the source files that are used in the gamemode. The "meat" of the project is in here. Most things are self-explanatory or have corresponding documentation in them.
 
+-----
+
 ### Submodules
 If you're new to submodules, you can read about them [here on the official Git website](https://git-scm.com/book/en/v2/Git-Tools-Submodules). Upgrade Shop utilizes submodules for OWScript and modules that are imported into the gamemode.
+
+-----
 
 ### Compiling
 Compiling is SUPER easy, assuming you've . All you have to do is is execute `compile.sh`. If no errors are present, it will output the script to `dist/shop.ows`. 
@@ -52,7 +63,7 @@ Just copy and paste the code from `dist/shop.ows` to your Overwatch workshop scr
 
 -----
 
-#### Watcher
+### Watcher
 I've "written" (thanks Stack Overflow and GitHub gists) a script for PowerShell that watches all the `*.owpy` files and on change, it will recompile. Only supports Windows currently.
 
 ## OWScript
